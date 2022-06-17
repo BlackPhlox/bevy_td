@@ -2,7 +2,7 @@
 name = "bevy_game" # ToDo
 version = "0.1.0"
 publish = false
-authors = ["Niklas Eicker <git@nikl.me>"] # ToDo: you are the author ;)
+authors = ["Mikkel L. Rasmussen <theluja@gmail.com>"] # ToDo: you are the author ;)
 edition = "2021"
 
 [profile.dev.package."*"]
@@ -32,6 +32,7 @@ dev = [
 bevy = { version = "0.7", default-features = false }
 bevy_kira_audio = { version = "0.10" }
 bevy_asset_loader = { version = "0.11" }
+bevy_prototype_lyon = "0.5.0"
 rand = "0.8.3"
 
 [target.'cfg(target_os = "linux")'.dependencies]
