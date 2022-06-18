@@ -5,7 +5,7 @@ use std::f64::consts::PI;
 use bevy::prelude::*;
 use bevy::DefaultPlugins;
 use bevy_prototype_lyon::prelude::*;
-use bevy_game::GamePlugin;
+use getting_over_him::GamePlugin;
 
 fn main() {
     App::new()
@@ -14,7 +14,7 @@ fn main() {
         .insert_resource(WindowDescriptor {
             width: 800.,
             height: 600.,
-            title: "Bevy game".to_string(), // ToDo
+            title: "Getting Over Him".to_string(),
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
@@ -25,6 +25,7 @@ fn main() {
         .add_system(change_draw_mode_system)
         .add_system(change_number_of_sides)
         .add_system(rotate_shape_system)
+        .add_system(update_lines)
         .run();
 }
 
@@ -69,6 +70,21 @@ fn change_number_of_sides(mut query: Query<&mut Path, With<ExampleShape>>, time:
         };
 
         *path = ShapePath::build_as(&polygon);
+    }
+}
+
+fn update_lines(mut query: Query<&mut Path, With<ExampleShape>>, time: Res<Time>){
+    for mut path in query.iter_mut() {
+        *path =
+        {
+            let polygon = shapes::RegularPolygon {
+                sides: 5,
+                feature: shapes::RegularPolygonFeature::Radius(200.0),
+                ..shapes::RegularPolygon::default()
+            };
+
+            ShapePath::build_as(&polygon)
+        };
     }
 }
 
