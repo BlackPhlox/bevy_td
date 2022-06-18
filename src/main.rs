@@ -28,10 +28,11 @@ fn main() {
         .run();
 }
 
-
-
 #[derive(Component)]
 struct ExampleShape;
+
+#[derive(Component)]
+struct LineShape;
 
 fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
     let delta = time.delta_seconds();
@@ -57,7 +58,7 @@ fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
     }
 }
 
-fn change_number_of_sides(mut query: Query<&mut Path>, time: Res<Time>) {
+fn change_number_of_sides(mut query: Query<&mut Path, With<ExampleShape>>, time: Res<Time>) {
     let sides = ((time.seconds_since_startup() - PI * 2.5).sin() * 2.5 + 5.5).round() as usize;
 
     for mut path in query.iter_mut() {
@@ -90,4 +91,11 @@ fn setup_system(mut commands: Commands) {
             Transform::default(),
         ))
         .insert(ExampleShape);
+
+    let lines = shapes::Line {
+        0: Vec2::new(-100.0, 0.0),
+        1: Vec2::new(200.0, 200.0),
+    };
+
+    commands.spawn_bundle(GeometryBuilder::build_as(&lines, DrawMode::Stroke(StrokeMode::color(Color::BLACK)), Transform::default())).insert(LineShape);
 }
