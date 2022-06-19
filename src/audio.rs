@@ -24,7 +24,7 @@ fn start_audio(audio_assets: Res<AudioAssets>, audio: Res<Audio>) {
 }
 
 fn control_flying_sound(actions: Res<Actions>, audio: Res<Audio>) {
-    if actions.player_movement.is_some() {
+    if actions.trigger_pressed {
         audio.resume();
     } else {
         audio.pause()

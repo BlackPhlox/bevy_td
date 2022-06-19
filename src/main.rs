@@ -1,11 +1,11 @@
 // disable console on windows for release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::f64::consts::PI;
 use bevy::prelude::*;
 use bevy::DefaultPlugins;
 use bevy_prototype_lyon::prelude::*;
 use getting_over_him::GamePlugin;
+use std::f64::consts::PI;
 
 fn main() {
     App::new()
@@ -19,21 +19,16 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(GamePlugin)
-        
         .add_plugin(ShapePlugin)
         .add_startup_system(setup_system)
         .add_system(change_draw_mode_system)
         .add_system(change_number_of_sides)
         .add_system(rotate_shape_system)
-        .add_system(update_lines)
         .run();
 }
 
 #[derive(Component)]
 struct ExampleShape;
-
-#[derive(Component)]
-struct LineShape;
 
 fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
     let delta = time.delta_seconds();
@@ -73,21 +68,6 @@ fn change_number_of_sides(mut query: Query<&mut Path, With<ExampleShape>>, time:
     }
 }
 
-fn update_lines(mut query: Query<&mut Path, With<ExampleShape>>, time: Res<Time>){
-    for mut path in query.iter_mut() {
-        *path =
-        {
-            let polygon = shapes::RegularPolygon {
-                sides: 5,
-                feature: shapes::RegularPolygonFeature::Radius(200.0),
-                ..shapes::RegularPolygon::default()
-            };
-
-            ShapePath::build_as(&polygon)
-        };
-    }
-}
-
 fn setup_system(mut commands: Commands) {
     let shape = shapes::RegularPolygon {
         sides: 6,
@@ -95,8 +75,6 @@ fn setup_system(mut commands: Commands) {
         ..shapes::RegularPolygon::default()
     };
 
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-    //commands.spawn_bundle(Camera2dBundle::default());
     commands
         .spawn_bundle(GeometryBuilder::build_as(
             &shape,
@@ -107,11 +85,4 @@ fn setup_system(mut commands: Commands) {
             Transform::default(),
         ))
         .insert(ExampleShape);
-
-    let lines = shapes::Line {
-        0: Vec2::new(-100.0, 0.0),
-        1: Vec2::new(200.0, 200.0),
-    };
-
-    commands.spawn_bundle(GeometryBuilder::build_as(&lines, DrawMode::Stroke(StrokeMode::color(Color::BLACK)), Transform::default())).insert(LineShape);
 }
