@@ -16,7 +16,7 @@ impl Plugin for ActionsPlugin {
 #[derive(Default)]
 pub struct Actions {
     pub player_movement: Option<Vec2>,
-    pub grabbed_mouse: bool,
+    pub grabbed_mouse: (bool, bool),
     pub trigger_pressed: bool,
 }
 
@@ -81,10 +81,15 @@ fn set_movement_actions(
     }
 
     if GameControl::MouseGrab.just_released(&keyboard_input, &buttons) {
-        if actions.grabbed_mouse {
-            actions.grabbed_mouse = false;
+        actions.grabbed_mouse.0 = false;
+    }
+
+    if GameControl::MouseGrab.just_pressed(&keyboard_input, &buttons) {
+        actions.grabbed_mouse.0 = true;
+        if actions.grabbed_mouse.1 {
+            actions.grabbed_mouse.1 = false;
         } else {
-            actions.grabbed_mouse = true;
+            actions.grabbed_mouse.1 = true;
         }
     }
 

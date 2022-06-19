@@ -57,12 +57,14 @@ impl Plugin for PlayerPlugin {
 
 fn cursor_grab_system(mut windows: ResMut<Windows>, actions: Res<Actions>) {
     let window = windows.get_primary_mut().unwrap();
-    if actions.grabbed_mouse {
-        window.set_cursor_lock_mode(true);
-        window.set_cursor_visibility(false);
-    } else {
-        window.set_cursor_lock_mode(false);
-        window.set_cursor_visibility(true);
+    if actions.grabbed_mouse.0 {
+        if actions.grabbed_mouse.1 {
+            window.set_cursor_lock_mode(true);
+            window.set_cursor_visibility(false);
+        } else {
+            window.set_cursor_lock_mode(false);
+            window.set_cursor_visibility(true);
+        }
     }
 }
 
