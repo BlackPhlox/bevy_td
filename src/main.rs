@@ -4,85 +4,43 @@
 use bevy::prelude::*;
 use bevy::DefaultPlugins;
 use bevy_prototype_lyon::prelude::*;
+use bevy_rapier2d::prelude::*;
 use getting_over_him::GamePlugin;
-use std::f64::consts::PI;
 
 fn main() {
     App::new()
         .insert_resource(Msaa { samples: 4 })
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
         .insert_resource(WindowDescriptor {
-            width: 800.,
-            height: 600.,
+            width: 1200.,
+            height: 800.,
             title: "Getting Over Him".to_string(),
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(GamePlugin)
         .add_plugin(ShapePlugin)
-        .add_startup_system(setup_system)
-        .add_system(change_draw_mode_system)
-        .add_system(change_number_of_sides)
-        .add_system(rotate_shape_system)
-        .run();
-}
-
-#[derive(Component)]
-struct ExampleShape;
-
-fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
-    let delta = time.delta_seconds();
-
-    for mut transform in query.iter_mut() {
-        transform.rotate(Quat::from_rotation_z(0.2 * delta));
-    }
-}
-
-fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
-    let hue = (time.seconds_since_startup() * 50.0) % 360.0;
-    let outline_width = 2.0 + time.seconds_since_startup().sin().abs() * 10.0;
-
-    for mut draw_mode in query.iter_mut() {
-        if let DrawMode::Outlined {
-            ref mut fill_mode,
-            ref mut outline_mode,
-        } = *draw_mode
-        {
-            fill_mode.color = Color::hsl(hue as f32, 1.0, 0.5);
-            outline_mode.options.line_width = outline_width as f32;
-        }
-    }
-}
-
-fn change_number_of_sides(mut query: Query<&mut Path, With<ExampleShape>>, time: Res<Time>) {
-    let sides = ((time.seconds_since_startup() - PI * 2.5).sin() * 2.5 + 5.5).round() as usize;
-
-    for mut path in query.iter_mut() {
-        let polygon = shapes::RegularPolygon {
-            sides,
-            feature: shapes::RegularPolygonFeature::Radius(200.0),
-            ..shapes::RegularPolygon::default()
-        };
-
-        *path = ShapePath::build_as(&polygon);
-    }
-}
-
-fn setup_system(mut commands: Commands) {
-    let shape = shapes::RegularPolygon {
-        sides: 6,
-        feature: shapes::RegularPolygonFeature::Radius(200.0),
-        ..shapes::RegularPolygon::default()
-    };
-
-    commands
-        .spawn_bundle(GeometryBuilder::build_as(
-            &shape,
-            DrawMode::Outlined {
-                fill_mode: FillMode::color(Color::CYAN),
-                outline_mode: StrokeMode::new(Color::BLACK, 10.0),
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(25.0))
+        .add_plugin(RapierDebugRenderPlugin {
+            style: DebugRenderStyle {
+                border_subdivisions: 0,
+                collider_dynamic_color: [0., 0., 0., 1.0],
+                collider_kinematic_color: [20.0, 1.0, 0.3, 0.0],
+                collider_fixed_color: [30.0, 1.0, 0.4, 0.0],
+                collider_parentless_color: [30.0, 1.0, 0.4, 0.0],
+                impulse_joint_anchor_color: [240.0, 0.5, 0.4, 0.0],
+                impulse_joint_separation_color: [0.0, 0.5, 0.4, 0.0],
+                multibody_joint_anchor_color: [300.0, 1.0, 0.4, 0.0],
+                multibody_joint_separation_color: [0.0, 1.0, 0.4, 0.0],
+                sleep_color_multiplier: [1.0, 1.0, 0.2, 0.0],
+                rigid_body_axes_length: 0.0,
+                contact_depth_color: [120.0, 1.0, 0.4, 0.0],
+                contact_normal_color: [0.0, 1.0, 1.0, 0.0],
+                contact_normal_length: 0.3,
+                collider_aabb_color: [124.0, 1.0, 0.4, 0.0],
+                ..Default::default()
             },
-            Transform::default(),
-        ))
-        .insert(ExampleShape);
+            ..Default::default()
+        })
+        .run();
 }

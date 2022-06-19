@@ -31,11 +31,15 @@ pub struct FontAssets {
 #[derive(AssetCollection)]
 pub struct AudioAssets {
     #[asset(path = "audio/flying.ogg")]
-    pub flying: Handle<AudioSource>,
+    pub shooting: Handle<AudioSource>,
+    #[asset(path = "audio/walking.ogg")]
+    pub walking: Handle<AudioSource>,
 }
 
 #[derive(AssetCollection)]
 pub struct TextureAssets {
     #[asset(path = "textures/bevy.png")]
     pub texture_bevy: Handle<Image>,
+    #[asset(path = "textures/grass.png")]
+    pub texture_ground: Handle<Image>,
 }
