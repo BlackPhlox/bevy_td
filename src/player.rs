@@ -103,13 +103,13 @@ fn setup_physics(mut commands: Commands, textures: Res<TextureAssets>) {
                     },
                     ..Default::default()
                 })
-                .insert(Map);
+                .insert(Tile);
         }
     }
 }
 
 #[derive(Component)]
-struct Map;
+struct Tile;
 
 #[allow(dead_code)]
 fn cursor_grab_system(mut windows: ResMut<Windows>, actions: Res<Actions>) {
